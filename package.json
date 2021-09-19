@@ -1,12 +1,11 @@
 {
-  "name": "section03",
+  "name": "cse341-node",
   "version": "1.0.0",
   "description": "Complete node guide",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js",
-    "start-server": "node app.js"
+    "start": "node app.js"
   },
   "author": "Kevin Haro",
   "license": "ISC",
