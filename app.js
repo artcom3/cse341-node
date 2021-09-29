@@ -42,7 +42,7 @@ app.use(errorController.get404);
 
 
 const corsOptions = {
-  origin: "https://<your_app_name>.herokuapp.com/",
+  origin: "https://artcom-ecommerce.herokuapp.com/",
   optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));
