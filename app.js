@@ -21,18 +21,18 @@ const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 
 app.use(express.urlencoded({
-    extended: false
+  extended: false
 }));
 // To add the path for the statics elements
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use((req, res, next) => {
-    User.findById('5bab316ce0a7c75f783cb8a8')
-        .then(user => {
-            req.user = user;
-            next();
-        })
-        .catch(err => console.log(err));
+  User.findById('5bab316ce0a7c75f783cb8a8')
+    .then(user => {
+      req.user = user;
+      next();
+    })
+    .catch(err => console.log(err));
 });
 
 app.use('/admin', adminRoutes);
@@ -42,51 +42,48 @@ app.use(errorController.get404);
 
 
 const corsOptions = {
-    origin: "https://<your_app_name>.herokuapp.com/",
-    optionsSuccessStatus: 200
+  origin: "https://<your_app_name>.herokuapp.com/",
+  optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));
 
 const options = {
-    useUnifiedTopology: true,
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useFindAndModify: false,
-    family: 4
+  useUnifiedTopology: true,
+  useNewUrlParser: true,
+  useCreateIndex: true,
+  useFindAndModify: false,
+  family: 4
 };
 
-const MONGODB_URL = process.env.MONGODB_URL || "mongodb+srv://<username>:<username>@cse341cluster-3dwlw.mongodb.net/test?retryWrites=true&w=majority";
+const MONGODB_URL = process.env.MONGODB_URL || "mongodb+srv://artcom:<password>@cluster0.evuqr.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
 
 
 mongoose
-    .connect(
-        MONGODB_URL, options
-    )
-    .then(result => {
-        User.findOne().then(user => {
-            if (!user) {
-                const user = new User({
-                    name: 'Kevin',
-                    email: 'kevin@test.com',
-                    cart: {
-                        items: []
-                    }
-                });
-                user.save();
-            }
+  .connect(
+    MONGODB_URL, options
+  )
+  .then(result => {
+    User.findOne().then(user => {
+      if (!user) {
+        const user = new User({
+          name: 'Kevin',
+          email: 'kevin@test.com',
+          cart: {
+            items: []
+          }
         });
-        // const server = http.createServer(app);
-
-        // server.listen(3000);
-        const PORT = process.env.PORT || 3000;
-
-        app.listen(PORT, () => {
-            console.log(`Our app is running on port ${ PORT }`);
-        });
-    })
-    .catch(err => {
-        console.log(err);
+        user.save();
+      }
     });
+    // const server = http.createServer(app);
 
+    // server.listen(3000);
+    const PORT = process.env.PORT || 3000;
 
-
+    app.listen(PORT, () => {
+      console.log(`Our app is running on port ${ PORT }`);
+    });
+  })
+  .catch(err => {
+    console.log(err);
+  });
