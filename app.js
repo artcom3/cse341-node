@@ -14,9 +14,6 @@ app.set('view engine', 'ejs');
 // It applies /views by default
 app.set('views', 'views');
 
-
-const errorController = require('./controllers/error')
-
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 
