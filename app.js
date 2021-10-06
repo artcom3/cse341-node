@@ -3,6 +3,8 @@ const path = require('path');
 
 const express = require('express');
 const mongoose = require('mongoose');
+const session = require('express-session');
+const MongoDBStore = require('connect-mongodb-session')(session);
 const cors = require('cors')
 
 const errorController = require('./controllers/error');
@@ -10,7 +12,13 @@ const User = require('./models/user');
 
 const PORT = process.env.PORT || 3000; // For Heroku
 
+const MONGODB_URI = 
+  process.env.MONGODB_URL ;
 const app = express();
+const store = new MongoDBStore({
+  uri: MONGODB_URI,
+  collection: 'sessions'
+});
 
 app.set('view engine', 'ejs');
 // It applies /views by default
@@ -18,15 +26,28 @@ app.set('views', 'views');
 
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
+const authRoutes = require('./routes/auth');
 
 app.use(express.urlencoded({ extended: false }));
 // To add the path for the statics elements
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(
+  session({
+    secret: 'my secret',
+    resave: false,
+    saveUninitialized: false,
+    store: store
+  })
+);
 
 app.use((req, res, next) => {
-  User.findById('615821b74ed1a95f2519a160')
+  if (!req.session.user) {
+    return next();
+  }
+  User.findById(req.session.user._id)
     .then(user => {
       req.user = user;
+      console.log(req.user);
       next();
     })
     .catch(err => console.log(err));
@@ -34,6 +55,7 @@ app.use((req, res, next) => {
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
+app.use(authRoutes);
 
 app.use(errorController.get404);
 
@@ -47,17 +69,12 @@ app.use(cors(corsOptions));
 const options = {
   useUnifiedTopology: true,
   useNewUrlParser: true,
-  useCreateIndex: true,
-  useFindAndModify: false,
   family: 4
 };
 
-const MONGODB_URL = process.env.MONGODB_URL || "mongodb+srv://artcom:oR90mDarp1VpDj8u@cluster0.evuqr.mongodb.net/shop?retryWrites=true&w=majority";
-
-
 mongoose
   .connect(
-    MONGODB_URL
+    MONGODB_URI, options
   )
   .then(result => {
     User.findOne().then(user => {
