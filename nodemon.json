@@ -1,0 +1,6 @@
+{
+    "env": {
+        "MONGODB_URL": "mongodb+srv://artcom:NnqVJL5uD3YsvEtJ@cluster0.evuqr.mongodb.net/shop?retryWrites=true&w=majority",
+        "SENDGRID_API_KEY": "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"
+    }
+}

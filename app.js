@@ -14,8 +14,7 @@ const User = require('./models/user');
 
 const PORT = process.env.PORT || 3000; // For Heroku
 
-const MONGODB_URI = 
-  process.env.MONGODB_URL;
+const MONGODB_URI = process.env.MONGODB_URL;
 
 const app = express();
 const store = new MongoDBStore({
@@ -51,7 +50,7 @@ app.use((req, res, next) => {
   User.findById(req.session.user._id)
     .then(user => {
       req.user = user;
-      console.log(req.user);
+      //console.log(req.user);
       next();
     })
     .catch(err => console.log(err));
