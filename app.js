@@ -6,6 +6,8 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const cors = require('cors')
+const csrf = require('csurf');
+const flash = require('connect-flash');
 
 const errorController = require('./controllers/error');
 const User = require('./models/user');
@@ -13,24 +15,24 @@ const User = require('./models/user');
 const PORT = process.env.PORT || 3000; // For Heroku
 
 const MONGODB_URI = 
-  process.env.MONGODB_URL ;
+  process.env.MONGODB_URL;
+
 const app = express();
 const store = new MongoDBStore({
   uri: MONGODB_URI,
   collection: 'sessions'
 });
+const csrfProtection = csrf();
 
 app.set('view engine', 'ejs');
-// It applies /views by default
-app.set('views', 'views');
+app.set('views', 'views'); // It applies /views by default
 
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const authRoutes = require('./routes/auth');
 
 app.use(express.urlencoded({ extended: false }));
-// To add the path for the statics elements
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public'))); // To add the path for the statics elements
 app.use(
   session({
     secret: 'my secret',
@@ -39,6 +41,8 @@ app.use(
     store: store
   })
 );
+app.use(csrfProtection);
+app.use(flash());
 
 app.use((req, res, next) => {
   if (!req.session.user) {
@@ -51,6 +55,12 @@ app.use((req, res, next) => {
       next();
     })
     .catch(err => console.log(err));
+});
+
+app.use((req, res, next) => {
+  res.locals.isAuthenticated = req.session.isLoggedIn;
+  res.locals.csrfToken = req.csrfToken();
+  next();
 });
 
 app.use('/admin', adminRoutes);
@@ -76,20 +86,7 @@ mongoose
   .connect(
     MONGODB_URI, options
   )
-  .then(result => {
-    User.findOne().then(user => {
-      if (!user) {
-        const user = new User({
-          name: 'Kevin',
-          email: 'kevin@test.com',
-          cart: {
-            items: []
-          }
-        });
-        user.save();
-      }
-    });
-  
+  .then(result => { 
     app.listen(PORT, () => {
       console.log(`Our app is running on port ${ PORT }`);
     });
