@@ -29,6 +29,7 @@ app.set('views', 'views'); // It applies /views by default
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const authRoutes = require('./routes/auth');
+const p08Routes = require('./routes/p08');
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public'))); // To add the path for the statics elements
@@ -69,6 +70,7 @@ app.use((req, res, next) => {
 
 
 app.use('/admin', adminRoutes);
+app.use('/p08/', p08Routes);
 app.use(shopRoutes);
 app.use(authRoutes);
 
